@@ -654,10 +654,17 @@ export function addDashboardTools(server, metabaseClient) {
             })
                 .passthrough())
                 .describe("Array of card configurations"),
+            tabs: z
+                .array(z.object({
+                id: z.number().optional().describe("Tab ID (omit for new tabs)"),
+                name: z.string().describe("Tab name"),
+            }).passthrough())
+                .optional()
+                .describe("Dashboard tabs. Pass [] to remove all tabs. Omit to preserve existing tabs."),
         }).strict(),
         execute: async (args) => {
             try {
-                const result = await metabaseClient.updateDashboardCards(args.dashboard_id, args.cards);
+                const result = await metabaseClient.updateDashboardCards(args.dashboard_id, args.cards, args.tabs);
                 return JSON.stringify(result, null, 2);
             }
             catch (error) {
